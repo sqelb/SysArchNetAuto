@@ -24,7 +24,7 @@ mon = True
 while mon == True:
     q = int(input("What Option do you pick?\n")) # Getting user input for primary option
 
-    # Detects all the available primary options and gives the desired output 
+    # Based on user input detects all the available primary options and gives the desired output 
     if q == 1:
         print("You have picked: ", Matrix[0][q])
         mon = False
