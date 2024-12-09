@@ -7,8 +7,14 @@ Matrix[0][1] = "Show IP address"
 Matrix[0][2] = "Show Remote home directory listing"
 Matrix[0][3] = "Backup remote file"
 Matrix[0][4] = "Quit"
-# All the options available for the user, once an option has been selected by the user the code for it would be executed.
-# Options will be split into primary and secondary options, most primary options will have a secondary option
+'''
+ All the options available for the user, once an option has been 
+ selected by the user the code for it would be executed.
+'''
+'''
+Options will be split into primary and secondary options, 
+most primary options will have a secondary option
+'''
 
 i = 0 # Variable created to be able to be incremented to then be able to list all the Primary options
 
@@ -16,7 +22,8 @@ def options(i, Matrix, r): # Function created to output all the primary options 
     for r in Matrix:
         for val in r:
             i += 1
-            print(i, ": ", "{}".format(val)) # Using formating to output the Option numbers and the options themselves
+            print(i, ": ", "{}".format(val)) 
+            # Using formating to output the Option numbers and the options themselves
 
 options(i, Matrix, r) # Calling function to print out all the options
 

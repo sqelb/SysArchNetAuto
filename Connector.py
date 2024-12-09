@@ -1,4 +1,9 @@
-from netmiko import ConnectHandler # adds a pre compiled libary called NetMiko which handles SSH connection to other machines through python, in specific importing the ConnectionHandler
+from netmiko import ConnectHandler 
+'''
+adds a pre compiled libary called NetMiko which handles
+SSH connection to other machines through python, 
+in specific importing the ConnectionHandler
+'''
 # importing only a certain section of NetMiko ensures a smaller file size as the whole libary is then not imported
 # NetMiko is an extension of ParaMiko with a lot more usability
 
