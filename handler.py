@@ -1,9 +1,20 @@
-
+from netmiko import ConnectHandler 
+import getpass # Secure way of inputting a password (no terminal feedback)
+'''
+adds a pre compiled libary called NetMiko which handles
+SSH connection to other machines through python, 
+in specific importing the ConnectionHandler
+'''
+'''
+importing only a certain section of NetMiko ensures a smaller file size 
+as the whole libary is then not imported
+'''
+# NetMiko is an extension of ParaMiko with a lot more usability
 
 r, c = 6, 1 # Defining how many rows and columns the array has 
 Matrix = [[0 for x in range(r)] for y in range(c)] # Creates a 2D Array
-Matrix[0][0] = "Show date and time"
-Matrix[0][1] = "Show IP address"
+Matrix[0][0] = "Show date and time (local)"
+Matrix[0][1] = "Show IP address(local)"
 Matrix[0][2] = "Show Remote home directory listing"
 Matrix[0][3] = "Backup remote file"
 Matrix[0][4] = "Save web page"
@@ -20,47 +31,89 @@ most primary options will have a secondary option
 i = 0 # Variable created to be able to be incremented to then be able to list all the Primary options
 
 def options(i, Matrix, r): # Function created to output all the primary options once called on
-    for r in Matrix:
-        for val in r:
-            i += 1
-            print(i, ": ", "{}".format(val)) 
+    for r in Matrix: # for rows in 2D array
+        for val in r: # for values detected in a row
+            i += 1 # increment I
+            print(i, ": ", "{}".format(val)) # prints option number and value of the current row
             # Using formating to output the Option numbers and the options themselves
 
 
+def picker(): # user input made into function which can be called on at anytime
+    try: # tries the following code if there are no errors
+        while True:
+            options(i, Matrix, r) # Calling function to print out all the options
+            q = input("What Option do you pick?\n") # Getting user input for primary option
+            q = int(q) - 1 # turns user inputinto an iteger decrements the user input for if/else
 
-while True:
-    options(i, Matrix, r) # Calling function to print out all the options
-    q = int(input("What Option do you pick?\n")) # Getting user input for primary option
-    q -= q
+            # Based on user input detects all the available primary options and gives the desired output 
+            if q == 0:
+                print("You have picked: ", Matrix[0][q])
+                command = "date"
+                break
 
-    # Based on user input detects all the available primary options and gives the desired output 
-    if q == 0:
-        print("You have picked: ", Matrix[0][q])
-        command = "date"
-        break
+            elif q == 1:
+                print("You have picked: ", Matrix[0][q])
+                command = "ip addr show"
+                break
 
-    elif q == 1:
-        print("You have picked: ", Matrix[0][q])
-        command = "ip addr show"
-        break
+            elif q == 2:
+                print("You have picked: ", Matrix[0][q])
+                command = "ls ~/"
+                break
 
-    elif q == 2:
-        print("You have picked: ", Matrix[0][q])
-        command = "ls ~/"
-        break
+            elif q == 3:
+                print("You have picked: ", Matrix[0][q])
+                path = input("What Directory do you wish to copy from?\n~/")
+                file = input("What file do you wish to copy? ")
+                command = "cp ~/{path}/{file} ~/{path}/{file}".format()
+                '''
+                path and file variables both use user input to establish the path the command will follow 
+                and what file to execute this on
+                '''
+                break
 
-    elif q == 3:
-        print("You have picked: ", Matrix[0][q])
-        path = input("What Directory do you wish to copy from?\n~/")
-        file = input("What file do you wish to copy? ")
-        command = "cp ~/{path}{file} ~/{path}{file}".format()
-        break
+            elif q == 4:
+                print("You have picked: ", Matrix[0][q])
+                break
+    
+            elif q == 5:
+                print("You have picked: ", Matrix[0][q])
+                exit()
 
-    elif q == 4:
-        print("You have picked: ", Matrix[0][q])
+            else:
+                print("You have picked an invalid value\n\n") # Error message if no valid input was detected
+    
+            '''
+            Command variable stores the command for each option and then passes 
+            through to be executed depending on user input
+            '''
+    except: # catches the error rather than crashing and exitting the program
+        print("You have picked an invalid value\n\n") 
+        #prints error message if there were no valid input
 
-        break
+        picker() 
+        '''
+        Calls on the user options function to allow the user to see and pick options again 
+        if there was an error
+        '''
 
-    else:
-        print("You have picked an invalid value\n\n") # Error message if no valid input was detected
-        
+def connector():
+    IP = input(str("What IP are you attempting to connect to?"))
+    USER = input(str("What is the Username of the machine you're attempting to connect to?"))
+    PASS = getpass.getpass("What is the Password of the machine you're attempting to connect to?")
+    # Inputs to the parameters needed to establish the connection
+
+    NetConnect = ConnectHandler(
+                                device_type= "autodetect", # The device OS your attempting to connect to
+                                host= IP, # is the IP of the Host you're attempting to connect to
+                                port= "5679", # is a Host port whereas port 22 is a Guest PORT
+                                username= USER, # Change to your username
+                                password= PASS, # Change to your password
+                                )
+    return NetConnect
+
+
+connector() # place the connector file into the main file for ease of coding and ease of access
+picker() # initialise picker after connector as a ssh connection to the machine needs to be made
+
+
