@@ -70,21 +70,22 @@ def picker(NetConnect): # user input made into function which can be called on a
 
             elif q == 3:
                 print("You have picked: ", Matrix[0][q])
-                path = input("What Directory do you wish to copy from?\n~/")
+                path = input("What Directory do you wish to copy from? ")
                 file = input("What file do you wish to copy? ")
-                command = "cp ~/{path}/{file} ~/{path}/{file}".format(path, file, path, file)
+                command = "cp ~/{}/{} ~/{}/{}.old".format(path, file, path, file)
                 print(NetConnect.send_command(command)) # copies a user inputted file in ssh
                 '''
                 path and file variables both use user input to establish the path the command will follow 
                 and what file to execute this on
                 '''
+                print("\nFile copied\n")
                 
 
             elif q == 4:
                 print("You have picked: ", Matrix[0][q])
                 UserUrl = input("What URL would you like to save?\ne.g. http(s)://www.google.com\n") # will be passed to be saved
                 url = requests.get(UserUrl) # The webpage get coppied
-                FileName = "{}.html".format(url) # Made into a HTML file so it can be accessed at anytime
+                FileName = "{}.html".format(UserUrl) # Made into a HTML file so it can be accessed at anytime
                 file = open(FileName, "x") # file to store the webpage is created in the same directory as this program
                 file = open(FileName, "w") # file to write in is open
                 file.write(url.text) # writing the source code of the webpage in
@@ -127,6 +128,8 @@ def connector():
                                     username= USER, # Change to your username
                                     password= PASS, # Change to your password
                                 )
+        
+
         print("\n\nYou have connected to {}@{}\n\n".format(
                                                       NetConnect.username, 
                                                       NetConnect.host
@@ -144,5 +147,3 @@ def connector():
 
 NetConnect = connector() # place the connector file into the main file for ease of coding and ease of access
 picker(NetConnect) # initialise picker after connector as a ssh connection to the machine needs to be made
-
-
