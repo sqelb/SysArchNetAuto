@@ -2,6 +2,7 @@ from netmiko import ConnectHandler
 import getpass # Secure way of inputting a password (no terminal feedback)
 from netmiko import NetmikoTimeoutException # To detect and handle timeout of the ssh connection
 import os
+import requests
 
 '''
 adds a pre compiled libary called NetMiko which handles
@@ -81,6 +82,14 @@ def picker(NetConnect): # user input made into function which can be called on a
 
             elif q == 4:
                 print("You have picked: ", Matrix[0][q])
+                UserUrl = input("What URL would you like to save?\ne.g. http(s)://www.google.com\n") # will be passed to be saved
+                url = requests.get(UserUrl) # The webpage get coppied
+                FileName = "{}.html".format(url) # Made into a HTML file so it can be accessed at anytime
+                file = open(FileName, "x") # file to store the webpage is created in the same directory as this program
+                file = open(FileName, "w") # file to write in is open
+                file.write(url.text) # writing the source code of the webpage in
+                file.close # closes the file
+                print("Webpage saved\n")
                 
     
             elif q == 5:

@@ -1,11 +1,12 @@
+
 from netmiko import ConnectHandler 
 import getpass # Secure way of inputting a password (no terminal feedback)
+
 '''
 adds a pre compiled libary called NetMiko which handles
 SSH connection to other machines through python, 
 in specific importing the ConnectionHandler
-'''
-'''
+
 importing only a certain section of NetMiko ensures a smaller file size 
 as the whole libary is then not imported
 '''
@@ -23,6 +24,9 @@ NetConnect = ConnectHandler(
                             username= USER, # Change to your username
                             password= PASS, # Change to your password
 )
+
+
+
 
 
 
