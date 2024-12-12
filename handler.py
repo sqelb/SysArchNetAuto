@@ -1,5 +1,8 @@
 from netmiko import ConnectHandler 
 import getpass # Secure way of inputting a password (no terminal feedback)
+from netmiko import NetmikoTimeoutException # To detect and handle timeout of the ssh connection
+import os
+
 '''
 adds a pre compiled libary called NetMiko which handles
 SSH connection to other machines through python, 
@@ -38,7 +41,7 @@ def options(i, Matrix, r): # Function created to output all the primary options 
             # Using formating to output the Option numbers and the options themselves
 
 
-def picker(): # user input made into function which can be called on at anytime
+def picker(NetConnect): # user input made into function which can be called on at anytime
     try: # tries the following code if there are no errors
         while True:
             options(i, Matrix, r) # Calling function to print out all the options
@@ -48,37 +51,41 @@ def picker(): # user input made into function which can be called on at anytime
             # Based on user input detects all the available primary options and gives the desired output 
             if q == 0:
                 print("You have picked: ", Matrix[0][q])
-                command = "date"
-                break
+                command = "date" 
+                os.system(command) # runs the command date on the local terminal
+                
 
             elif q == 1:
                 print("You have picked: ", Matrix[0][q])
                 command = "ip addr show"
-                break
+                os.system(command) # runs the command ip addr show on the local terminal
+                
 
             elif q == 2:
                 print("You have picked: ", Matrix[0][q])
                 command = "ls ~/"
-                break
+                print(NetConnect.send_command(command)) # runs command in ssh
+                
 
             elif q == 3:
                 print("You have picked: ", Matrix[0][q])
                 path = input("What Directory do you wish to copy from?\n~/")
                 file = input("What file do you wish to copy? ")
-                command = "cp ~/{path}/{file} ~/{path}/{file}".format()
+                command = "cp ~/{path}/{file} ~/{path}/{file}".format(path, file, path, file)
+                print(NetConnect.send_command(command)) # copies a user inputted file in ssh
                 '''
                 path and file variables both use user input to establish the path the command will follow 
                 and what file to execute this on
                 '''
-                break
+                
 
             elif q == 4:
                 print("You have picked: ", Matrix[0][q])
-                break
+                
     
             elif q == 5:
                 print("You have picked: ", Matrix[0][q])
-                exit()
+                break
 
             else:
                 print("You have picked an invalid value\n\n") # Error message if no valid input was detected
@@ -91,29 +98,42 @@ def picker(): # user input made into function which can be called on at anytime
         print("You have picked an invalid value\n\n") 
         #prints error message if there were no valid input
 
-        picker() 
+        picker(NetConnect) 
         '''
         Calls on the user options function to allow the user to see and pick options again 
         if there was an error
         '''
 
 def connector():
-    IP = input(str("What IP are you attempting to connect to?"))
-    USER = input(str("What is the Username of the machine you're attempting to connect to?"))
-    PASS = getpass.getpass("What is the Password of the machine you're attempting to connect to?")
-    # Inputs to the parameters needed to establish the connection
+    try: # Tries this code first
+        IP = input(str("What IP are you attempting to connect to? "))
+        USER = input(str("What is the Username of the machine you're attempting to connect to? "))
+        PASS = getpass.getpass("What is the Password of the machine you're attempting to connect to? ")
+        # Inputs to the parameters needed to establish the connection
 
-    NetConnect = ConnectHandler(
-                                device_type= "autodetect", # The device OS your attempting to connect to
-                                host= IP, # is the IP of the Host you're attempting to connect to
-                                port= "5679", # is a Host port whereas port 22 is a Guest PORT
-                                username= USER, # Change to your username
-                                password= PASS, # Change to your password
+        NetConnect = ConnectHandler(
+                                    device_type= "autodetect", # The device OS your attempting to connect to
+                                    host= IP, # is the IP of the Host you're attempting to connect to
+                                    port= "5679", # is a Host port whereas port 22 is a Guest PORT
+                                    username= USER, # Change to your username
+                                    password= PASS, # Change to your password
                                 )
-    return NetConnect
+        print("\n\nYou have connected to {}@{}\n\n".format(
+                                                      NetConnect.username, 
+                                                      NetConnect.host
+                                                          )
+             )
+        return NetConnect
+
+    except NetmikoTimeoutException: # An error catcher which stops the command/connection being made indefinetly 
+        print("\nConnection time out.\n")
+        connector()
+    except Exception as Error: # Catches all the other errors that do not fall under timeout
+        print("\nError:{}\n".format(Error))
+        connector()
 
 
-connector() # place the connector file into the main file for ease of coding and ease of access
-picker() # initialise picker after connector as a ssh connection to the machine needs to be made
+NetConnect = connector() # place the connector file into the main file for ease of coding and ease of access
+picker(NetConnect) # initialise picker after connector as a ssh connection to the machine needs to be made
 
 
